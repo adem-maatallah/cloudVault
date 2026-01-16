@@ -1,5 +1,5 @@
-# Use Node.js LTS version
-FROM node:18-alpine
+# Use Node.js 12 (Compatible with your OpenShift environment)
+FROM docker.io/library/node:12-alpine
 
 # Set working directory
 WORKDIR /app

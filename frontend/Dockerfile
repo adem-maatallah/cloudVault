@@ -1,5 +1,5 @@
 # Stage 1: Dependencies
-FROM node:18-alpine AS deps
+FROM docker.io/library/node:18-alpine AS deps
 WORKDIR /app
 
 # Copy package files
@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm install
 
 # Stage 2: Builder
-FROM node:18-alpine AS builder
+FROM docker.io/library/node:18-alpine AS builder
 WORKDIR /app
 
 # Define build argument
@@ -24,7 +24,7 @@ COPY . .
 RUN npm run build
 
 # Stage 3: Runner
-FROM node:18-alpine AS runner
+FROM docker.io/library/node:18-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
