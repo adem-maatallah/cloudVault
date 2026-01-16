@@ -1,0 +1,47 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: myapp-frontend:latest # Substitute with your image registry path
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://backend:4000" # Internal service communication
+  strategy:
+    type: Rolling
+  triggers:
+    - type: ConfigChange
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: frontend
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: frontend
+spec:
+  to:
+    kind: Service
+    name: frontend
+  port:
+    targetPort: 3000

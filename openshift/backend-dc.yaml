@@ -1,0 +1,78 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: myapp-backend:latest # Substitute with your image registry path
+          ports:
+            - containerPort: 4000
+          env:
+            - name: DB_HOST
+              value: mysql
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudvault-secrets
+                  key: DB_PASSWORD
+            - name: DB_NAME
+              value: "myapp_db"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cloudvault-secrets
+                  key: JWT_SECRET
+            - name: JWT_EXPIRES_IN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudvault-secrets
+                  key: JWT_EXPIRES_IN
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 4000
+            initialDelaySeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 4000
+            initialDelaySeconds: 15
+  strategy:
+    type: Rolling
+  triggers:
+    - type: ConfigChange
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  ports:
+    - port: 4000
+      targetPort: 4000
+  selector:
+    app: backend
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: backend
+spec:
+  to:
+    kind: Service
+    name: backend
+  port:
+    targetPort: 4000
