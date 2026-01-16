@@ -2,12 +2,8 @@
 FROM registry.access.redhat.com/ubi8/nodejs-18 AS deps
 WORKDIR /opt/app-root/src
 
-COPY package*.json ./
-RUN npm install
-
-# Stage 2: Builder
-FROM registry.access.redhat.com/ubi8/nodejs-18 AS builder
-WORKDIR /opt/app-root/src
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
