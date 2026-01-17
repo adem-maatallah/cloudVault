@@ -83,8 +83,8 @@ const getStats = async (req, res) => {
       success: true,
       data: {
         storage: {
-          used: userRows[0]?.storage_used || 0,
-          limit: userRows[0]?.storage_limit || 10737418240,
+          used: (userRows && userRows[0] && userRows[0].storage_used) ? userRows[0].storage_used : 0,
+          limit: (userRows && userRows[0] && userRows[0].storage_limit) ? userRows[0].storage_limit : 10737418240,
           percentage: ((userRows[0]?.storage_used || 0) / (userRows[0]?.storage_limit || 10737418240) * 100).toFixed(2)
         },
         counts: {
