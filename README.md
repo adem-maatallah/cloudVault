@@ -379,8 +379,7 @@ ISC
 
 ## 👨‍💻 Author
 
-Your Name
-
+Adem Maatallah, Gisele Aydi
 ---
 
 **Happy Coding! 🚀**
